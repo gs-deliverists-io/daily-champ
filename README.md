@@ -486,14 +486,62 @@ flutter run -d macos --verbose
 
 ## Roadmap
 
-- [ ] Google Drive sync support
-- [ ] Recurring tasks
-- [ ] Task priorities and tags
-- [ ] Search functionality
-- [ ] Export to PDF/CSV
-- [ ] Multi-language support
-- [ ] iOS/Android widgets
-- [ ] Wear OS support
+Future enhancements being considered:
+
+### Sync & Integration
+- Google Drive sync support (alternative to Nextcloud)
+- Dropbox sync support
+- WebDAV generic support (any WebDAV server)
+- iCloud sync for Apple ecosystem
+- End-to-end encryption option
+
+### Task Management
+- Recurring tasks (daily, weekly, monthly patterns)
+- Task priorities (high, medium, low)
+- Task tags and categories
+- Subtasks and checklists
+- Task dependencies
+- Time tracking and pomodoro timer
+
+### Features
+- Search functionality (full-text search across all days)
+- Export to PDF/CSV/JSON
+- Import from other task managers
+- Markdown editor improvements (live preview, toolbar)
+- Attachments support (images, files)
+- Voice input for tasks
+- Quick capture widget
+
+### Platforms & UI
+- iOS/Android home screen widgets
+- Apple Watch companion app
+- Wear OS support
+- Desktop system tray icon
+- Command palette (keyboard shortcuts)
+- Customizable themes and colors
+
+### Analytics & Insights
+- Advanced statistics and charts
+- Streak tracking and gamification
+- Weekly/monthly reports
+- Goal tracking over time
+- Productivity insights
+- Time spent analysis
+
+### Collaboration
+- Shared team templates
+- Comments and notes on tasks
+- Activity log and history
+- Conflict resolution for synced edits
+
+### Developer Features
+- API for third-party integrations
+- Webhooks for automation
+- CLI tool for power users
+- Browser extension
+- Obsidian plugin integration
+
+Comments, suggestions, and contributions are welcome! Open an issue to discuss new features.
 
 ## License
 
@@ -509,8 +557,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Support
 
-- **Issues**: [GitHub Issues](https://github.com/yourusername/dailychamp/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/yourusername/dailychamp/discussions)
+- **Issues**: [GitHub Issues](https://github.com/gs-deliverists-io/daily-champ/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/gs-deliverists-io/daily-champ/discussions)
 
 ---
 
