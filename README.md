@@ -36,7 +36,18 @@ A beautiful, minimalist daily task tracker with markdown-based storage and Nextc
 
 ## Screenshots
 
-*Coming soon - add your app screenshots here*
+<table>
+  <tr>
+    <td><img src="screenshots/day-win.png" width="250" alt="Day View - Win"><br><em>Daily View - Win</em></td>
+    <td><img src="screenshots/day-loss.png" width="250" alt="Day View - Loss"><br><em>Daily View - Loss</em></td>
+    <td><img src="screenshots/add-task.png" width="250" alt="Add Task"><br><em>Add Task</em></td>
+  </tr>
+  <tr>
+    <td><img src="screenshots/calendar.png" width="250" alt="Calendar View"><br><em>Calendar View</em></td>
+    <td><img src="screenshots/stats.png" width="250" alt="Statistics"><br><em>Statistics</em></td>
+    <td><img src="screenshots/settings.png" width="250" alt="Settings"><br><em>Settings & Sync</em></td>
+  </tr>
+</table>
 
 ## Getting Started
 
@@ -44,16 +55,45 @@ A beautiful, minimalist daily task tracker with markdown-based storage and Nextc
 
 - **Flutter SDK** 3.x or higher ([Install Flutter](https://flutter.dev/docs/get-started/install))
 - **Dart SDK** 3.x or higher (comes with Flutter)
-- **Xcode** (for iOS/macOS development)
+- **Xcode** (for iOS/macOS development on macOS)
 - **Android Studio** (for Android development)
 - **Chrome** (for web development)
 
-### Installation
+### Quick Setup (Recommended)
+
+The easiest way to get started is using our automated setup script:
+
+```bash
+git clone https://github.com/gs-deliverists-io/daily-champ.git
+cd daily-champ
+./bin/setup
+```
+
+The setup script will:
+- ✅ Install Flutter via `mise` (version manager)
+- ✅ Install CocoaPods (macOS only, required for iOS/macOS builds)
+- ✅ Install Flutter dependencies (`flutter pub get`)
+- ✅ Create initial data directory at `~/Nextcloud/Notes/dailychamp/`
+- ✅ Create sample `daily.md` file
+- ✅ Create `templates/` directory for custom templates
+
+**Optional flags:**
+- `./bin/setup --test` - Run tests after setup
+- `./bin/setup --build` - Build app for your platform after setup
+
+**Note:** The setup script requires:
+- [gum](https://github.com/charmbracelet/gum) - For pretty terminal UI
+- [mise](https://mise.jdx.dev/) - For version management
+Both will be auto-installed if you have Homebrew (macOS) or pacman (Arch Linux).
+
+### Manual Installation
+
+If you prefer to install manually or the setup script doesn't work:
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/yourusername/dailychamp.git
-   cd dailychamp
+   git clone https://github.com/gs-deliverists-io/daily-champ.git
+   cd daily-champ
    ```
 
 2. **Install dependencies**

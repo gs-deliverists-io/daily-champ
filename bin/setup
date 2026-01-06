@@ -54,11 +54,17 @@ step() {
 
 echo
 gum style --foreground 153 "   ˚ ∘             ∘ ˚   "
-gum style --foreground 111 --bold "  ∘˚˳°∘°  execute  °∘°˳˚∘  "
+gum style --foreground 111 --bold "  ∘˚˳°∘°  DailyChamp  °∘°˳˚∘  "
 echo
 
 step "Installing Flutter" mise install --yes
 eval "$(mise hook-env -s bash)"
+
+# Verify Flutter installation
+if ! mise exec -- flutter --version &>/dev/null; then
+  gum style --foreground 196 "✗ Flutter installation failed"
+  exit 1
+fi
 
 # Install CocoaPods if on macOS
 if [[ "$OSTYPE" == "darwin"* ]]; then
@@ -74,19 +80,21 @@ fi
 step "Installing Flutter dependencies" mise exec -- flutter pub get
 
 # Create Nextcloud Notes directory if it doesn't exist
-notes_dir="/Users/gs/Nextcloud/Notes"
+# Uses HOME environment variable to be portable across users
+notes_dir="$HOME/Nextcloud/Notes/dailychamp"
 if [ ! -d "$notes_dir" ]; then
-  step "Creating Notes directory" mkdir -p "$notes_dir"
+  gum style --foreground 240 "Creating data directory at: $notes_dir"
+  mkdir -p "$notes_dir"
 fi
 
-# Create execute.md if it doesn't exist
-execute_file="$notes_dir/execute.md"
-if [ ! -f "$execute_file" ]; then
-  step "Creating execute.md" bash -c "cat > '$execute_file' << 'EOF'
+# Create daily.md if it doesn't exist
+daily_file="$notes_dir/daily.md"
+if [ ! -f "$daily_file" ]; then
+  step "Creating daily.md" bash -c "cat > '$daily_file' << 'EOF'
 # $(date +%Y-%m-%d) $(date +%A)
 
 ## Goals
-- Get started with Execute
+- Get started with DailyChamp
 
 ## Tasks
 - [ ] Complete first task | 1.0h
@@ -99,7 +107,14 @@ if [ ! -f "$execute_file" ]; then
 
 ---
 EOF"
-  gum style --foreground 46 "✓ Created $execute_file"
+  gum style --foreground 46 "✓ Created $daily_file"
+fi
+
+# Create templates directory
+templates_dir="$notes_dir/templates"
+if [ ! -d "$templates_dir" ]; then
+  mkdir -p "$templates_dir"
+  gum style --foreground 46 "✓ Created templates directory: $templates_dir"
 fi
 
 # Run tests if requested
@@ -127,5 +142,8 @@ else
 fi
 echo
 gum style --foreground 240 "Data location:"
-gum style --foreground 111 "  $execute_file"
+gum style --foreground 111 "  $daily_file"
+echo
+gum style --foreground 240 "Templates location:"
+gum style --foreground 111 "  $templates_dir"
 echo
