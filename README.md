@@ -73,9 +73,7 @@ The setup script will:
 - ✅ Install Flutter via `mise` (version manager)
 - ✅ Install CocoaPods (macOS only, required for iOS/macOS builds)
 - ✅ Install Flutter dependencies (`flutter pub get`)
-- ✅ Create initial data directory at `~/Nextcloud/Notes/dailychamp/`
-- ✅ Create sample `daily.md` file
-- ✅ Create `templates/` directory for custom templates
+- ✅ Verify Flutter installation
 
 **Optional flags:**
 - `./bin/setup --test` - Run tests after setup
