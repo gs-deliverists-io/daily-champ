@@ -623,19 +623,27 @@ class _TodayScreenState extends State<TodayScreen> {
                           child: Padding(
                             padding: const EdgeInsets.symmetric(
                               horizontal: AppTheme.space24,
-                              vertical: AppTheme.space8,
+                              vertical: AppTheme.space12,
                             ),
-                            child: OutlinedButton.icon(
+                            child: TextButton.icon(
                               onPressed: _showAddSectionDialog,
-                              icon: const Icon(Icons.add, size: 18),
-                              label: const Text('Add Section'),
-                              style: OutlinedButton.styleFrom(
+                              icon: Icon(
+                                Icons.add,
+                                size: 18,
+                                color: colorScheme.onSurface
+                                    .withValues(alpha: 0.6),
+                              ),
+                              label: Text(
+                                'Add section',
+                                style: theme.textTheme.labelLarge?.copyWith(
+                                  color: colorScheme.onSurface
+                                      .withValues(alpha: 0.6),
+                                ),
+                              ),
+                              style: TextButton.styleFrom(
                                 padding: const EdgeInsets.symmetric(
                                   vertical: AppTheme.space12,
-                                ),
-                                side: BorderSide(
-                                  color: colorScheme.outline
-                                      .withValues(alpha: 0.3),
+                                  horizontal: AppTheme.space16,
                                 ),
                               ),
                             ),
@@ -651,33 +659,14 @@ class _TodayScreenState extends State<TodayScreen> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text('Today',
-                                        style: theme.textTheme.titleLarge),
-                                    FilledButton.icon(
-                                      onPressed: () => _showTaskSheet(),
-                                      icon: const Icon(Icons.add, size: 18),
-                                      label: const Text('Add Task'),
-                                      style: FilledButton.styleFrom(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: AppTheme.space16,
-                                          vertical: AppTheme.space8,
-                                        ),
-                                        minimumSize: Size.zero,
-                                        tapTargetSize:
-                                            MaterialTapTargetSize.shrinkWrap,
-                                      ),
-                                    ),
-                                  ],
-                                ),
+                                Text('Today',
+                                    style: theme.textTheme.titleLarge),
                                 const SizedBox(height: AppTheme.space16),
                                 _buildEmptyState(
                                   icon: Icons.today_outlined,
-                                  message: 'No entries yet',
-                                  subtitle: 'Add a task to get started',
+                                  message: 'No sections yet',
+                                  subtitle:
+                                      'Create a section to organize your tasks',
                                   theme: theme,
                                 ),
                               ],
@@ -1004,16 +993,7 @@ class _TodayScreenState extends State<TodayScreen> {
                 Expanded(
                   child: Text(section.name, style: theme.textTheme.titleLarge),
                 ),
-                // Add item button
-                IconButton(
-                  onPressed: () => _showAddItemSheet(section.name),
-                  icon: const Icon(Icons.add),
-                  tooltip: 'Add item',
-                  style: IconButton.styleFrom(
-                    foregroundColor: colorScheme.primary,
-                  ),
-                ),
-                // Section menu
+                // Section menu (removed Add button - moved to inline)
                 PopupMenuButton<String>(
                   icon: Icon(
                     Icons.more_vert,
@@ -1072,9 +1052,8 @@ class _TodayScreenState extends State<TodayScreen> {
               _buildEmptyState(
                 icon: Icons.notes_outlined,
                 message: 'No items yet',
-                subtitle: 'Tap the button to add an item',
+                subtitle: 'Tap the button below to add an item',
                 theme: theme,
-                onAddItem: () => _showAddItemSheet(section.name),
               )
             else if (section.type == SectionType.text)
               // Text type: render as markdown paragraphs
@@ -1189,7 +1168,7 @@ class _TodayScreenState extends State<TodayScreen> {
                               ),
                             );
                           },
-                          backgroundColor: Colors.red.shade600,
+                          backgroundColor: AppTheme.error,
                           foregroundColor: Colors.white,
                           padding: EdgeInsets.zero,
                           borderRadius: const BorderRadius.horizontal(
@@ -1203,10 +1182,10 @@ class _TodayScreenState extends State<TodayScreen> {
                         ),
                       ],
                     ),
-                    // Swipe right: Copy to tomorrow (same as TaskTile)
+                    // Swipe right: Copy to tomorrow
                     startActionPane: ActionPane(
                       motion: const StretchMotion(),
-                      extentRatio: 0.25,
+                      extentRatio: 0.2,
                       children: [
                         CustomSlidableAction(
                           onPressed: (context) {
@@ -1258,21 +1237,17 @@ class _TodayScreenState extends State<TodayScreen> {
                             height: 24,
                             alignment: Alignment.center,
                             decoration: BoxDecoration(
-                              border: Border.all(
-                                color: colorScheme.outline,
-                                width: 2,
-                              ),
-                              borderRadius:
-                                  BorderRadius.circular(AppTheme.radius4),
+                              shape: BoxShape.circle,
+                              color: colorScheme.primary.withValues(alpha: 0.1),
                             ),
                             child: Icon(
-                              Icons.remove,
-                              size: 14,
-                              color:
-                                  colorScheme.onSurface.withValues(alpha: 0.6),
+                              Icons.circle,
+                              size: 8,
+                              color: colorScheme.primary,
                             ),
                           ),
-                          const SizedBox(width: AppTheme.space12),
+                          const SizedBox(width: AppTheme.space16),
+                          // Content with markdown support
                           Expanded(
                             child: MarkdownBody(
                               data: item,
@@ -1313,6 +1288,25 @@ class _TodayScreenState extends State<TodayScreen> {
                   ),
                 );
               }),
+
+            // Inline Add button (after all items)
+            const SizedBox(height: AppTheme.space12),
+            OutlinedButton.icon(
+              onPressed: () => _showAddItemSheet(section.name),
+              icon: const Icon(Icons.add, size: 20),
+              label: Text(
+                  section.type == SectionType.tasks ? 'Add task' : 'Add item'),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: colorScheme.primary,
+                side: BorderSide(
+                  color: colorScheme.primary.withValues(alpha: 0.5),
+                ),
+                padding: const EdgeInsets.symmetric(
+                  vertical: AppTheme.space12,
+                  horizontal: AppTheme.space16,
+                ),
+              ),
+            ),
           ],
         ),
       ),
