@@ -141,62 +141,43 @@ class _AddItemSheetState extends State<AddItemSheet> {
             // Time input (only for tasks)
             if (_selectedType == ItemType.task) ...[
               const SizedBox(height: AppTheme.space16),
+              // Duration input field
+              TextFormField(
+                controller: _timeController,
+                decoration: InputDecoration(
+                  labelText: 'Duration (optional)',
+                  hintText: _selectedTimeUnit == TimeUnit.hours ? '1' : '30',
+                  helperText: 'Leave empty for 1 hour default',
+                ),
+                keyboardType:
+                    const TextInputType.numberWithOptions(decimal: true),
+                textInputAction: TextInputAction.done,
+                onFieldSubmitted: (_) => _save(),
+                validator: (value) {
+                  // Allow empty - will default to 1.0
+                  if (value == null || value.trim().isEmpty) {
+                    return null;
+                  }
+                  final time = double.tryParse(value);
+                  if (time == null || time <= 0) {
+                    return 'Must be a positive number';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: AppTheme.space12),
+              // Unit selector (segmented button style - no keyboard dismissal)
               Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Time value input
-                  Expanded(
-                    flex: 2,
-                    child: TextFormField(
-                      controller: _timeController,
-                      decoration: InputDecoration(
-                        labelText: 'Duration',
-                        hintText:
-                            _selectedTimeUnit == TimeUnit.hours ? '1' : '30',
-                      ),
-                      keyboardType:
-                          const TextInputType.numberWithOptions(decimal: true),
-                      textInputAction: TextInputAction.done,
-                      onFieldSubmitted: (_) => _save(),
-                      validator: (value) {
-                        if (value == null || value.trim().isEmpty) {
-                          return 'Required';
-                        }
-                        final time = double.tryParse(value);
-                        if (time == null || time <= 0) {
-                          return 'Invalid';
-                        }
-                        return null;
-                      },
+                  Text(
+                    'Unit:',
+                    style: theme.textTheme.labelMedium?.copyWith(
+                      color: colorScheme.onSurface.withValues(alpha: 0.7),
                     ),
                   ),
                   const SizedBox(width: AppTheme.space12),
-                  // Unit selector dropdown
                   Expanded(
-                    flex: 1,
-                    child: DropdownButtonFormField<TimeUnit>(
-                      value: _selectedTimeUnit,
-                      decoration: const InputDecoration(
-                        labelText: 'Unit',
-                      ),
-                      items: const [
-                        DropdownMenuItem(
-                          value: TimeUnit.minutes,
-                          child: Text('min'),
-                        ),
-                        DropdownMenuItem(
-                          value: TimeUnit.hours,
-                          child: Text('hrs'),
-                        ),
-                      ],
-                      onChanged: (TimeUnit? newValue) {
-                        if (newValue != null) {
-                          setState(() {
-                            _selectedTimeUnit = newValue;
-                          });
-                        }
-                      },
-                    ),
+                    child: _buildUnitSelector(theme, colorScheme),
                   ),
                 ],
               ),
@@ -243,6 +224,79 @@ class _AddItemSheetState extends State<AddItemSheet> {
             isLast: true,
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildUnitSelector(ThemeData theme, ColorScheme colorScheme) {
+    return Container(
+      decoration: BoxDecoration(
+        color: colorScheme.surfaceContainerHighest,
+        borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
+        border: Border.all(
+          color: colorScheme.outline.withValues(alpha: 0.3),
+        ),
+      ),
+      child: Row(
+        children: [
+          _buildUnitOption(
+            theme: theme,
+            colorScheme: colorScheme,
+            unit: TimeUnit.minutes,
+            label: 'Minutes',
+            isFirst: true,
+          ),
+          _buildUnitOption(
+            theme: theme,
+            colorScheme: colorScheme,
+            unit: TimeUnit.hours,
+            label: 'Hours',
+            isLast: true,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildUnitOption({
+    required ThemeData theme,
+    required ColorScheme colorScheme,
+    required TimeUnit unit,
+    required String label,
+    bool isFirst = false,
+    bool isLast = false,
+  }) {
+    final isSelected = _selectedTimeUnit == unit;
+
+    return Expanded(
+      child: GestureDetector(
+        onTap: () => setState(() => _selectedTimeUnit = unit),
+        child: Container(
+          padding: const EdgeInsets.symmetric(
+            vertical: AppTheme.space8,
+          ),
+          decoration: BoxDecoration(
+            color: isSelected ? colorScheme.primary : Colors.transparent,
+            borderRadius: BorderRadius.horizontal(
+              left: isFirst
+                  ? const Radius.circular(AppTheme.radiusSmall - 1)
+                  : Radius.zero,
+              right: isLast
+                  ? const Radius.circular(AppTheme.radiusSmall - 1)
+                  : Radius.zero,
+            ),
+          ),
+          child: Text(
+            label,
+            textAlign: TextAlign.center,
+            style: theme.textTheme.labelSmall?.copyWith(
+              color: isSelected
+                  ? colorScheme.onPrimary
+                  : colorScheme.onSurface.withValues(alpha: 0.7),
+              fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+            ),
+          ),
+        ),
       ),
     );
   }
