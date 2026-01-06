@@ -63,43 +63,45 @@ vim.api.nvim_create_user_command('DailyChampOpen', function()
   dailychamp.open_file()
 end, { desc = 'Open dailychamp/daily.md file' })
 
--- Setup default keybindings (can be customized in user config)
+-- Setup default keybindings (only for dailychamp markdown files)
 local function setup_keymaps()
   local leader = dailychamp.config.leader
+  local opts = { buffer = true, silent = true }
   
   -- File operations
-  vim.keymap.set('n', leader .. 'o', '<cmd>DailyChampOpen<cr>', { desc = 'Open daily.md' })
+  vim.keymap.set('n', leader .. 'o', '<cmd>DailyChampOpen<cr>', vim.tbl_extend('force', opts, { desc = 'Open daily.md' }))
   
   -- Navigation
-  vim.keymap.set('n', leader .. 't', '<cmd>DailyChampJumpToday<cr>', { desc = 'Jump to today' })
-  vim.keymap.set('n', leader .. 'j', '<cmd>DailyChampJumpDate<cr>', { desc = 'Jump to date' })
+  vim.keymap.set('n', leader .. 't', '<cmd>DailyChampJumpToday<cr>', vim.tbl_extend('force', opts, { desc = 'Jump to today' }))
+  vim.keymap.set('n', leader .. 'j', '<cmd>DailyChampJumpDate<cr>', vim.tbl_extend('force', opts, { desc = 'Jump to date' }))
   
   -- Day operations
-  vim.keymap.set('n', leader .. 'n', '<cmd>DailyChampNewDay<cr>', { desc = 'New day (top)' })
-  vim.keymap.set('n', leader .. 'N', '<cmd>DailyChampNewDayHere<cr>', { desc = 'New day (cursor)' })
+  vim.keymap.set('n', leader .. 'n', '<cmd>DailyChampNewDay<cr>', vim.tbl_extend('force', opts, { desc = 'New day (top)' }))
+  vim.keymap.set('n', leader .. 'N', '<cmd>DailyChampNewDayHere<cr>', vim.tbl_extend('force', opts, { desc = 'New day (cursor)' }))
   
   -- Task operations
-  vim.keymap.set('n', leader .. 'a', '<cmd>DailyChampQuickTask<cr>', { desc = 'Add task (quick)' })
-  vim.keymap.set('n', leader .. 'A', '<cmd>DailyChampTask<cr>', { desc = 'Add task (prompt)' })
-  vim.keymap.set('n', leader .. 'x', '<cmd>DailyChampToggle<cr>', { desc = 'Toggle task' })
-  vim.keymap.set('n', leader .. 'c', '<cmd>DailyChampCopyTask<cr>', { desc = 'Copy task to tomorrow' })
+  vim.keymap.set('n', leader .. 'a', '<cmd>DailyChampQuickTask<cr>', vim.tbl_extend('force', opts, { desc = 'Add task (quick)' }))
+  vim.keymap.set('n', leader .. 'A', '<cmd>DailyChampTask<cr>', vim.tbl_extend('force', opts, { desc = 'Add task (prompt)' }))
+  vim.keymap.set('n', leader .. 'x', '<cmd>DailyChampToggle<cr>', vim.tbl_extend('force', opts, { desc = 'Toggle task' }))
+  vim.keymap.set('n', leader .. 'c', '<cmd>DailyChampCopyTask<cr>', vim.tbl_extend('force', opts, { desc = 'Copy task to tomorrow' }))
   
   -- Section operations
-  vim.keymap.set('n', leader .. 's', '<cmd>DailyChampSection<cr>', { desc = 'New section' })
-  vim.keymap.set('n', leader .. 'g', '<cmd>DailyChampGoal<cr>', { desc = 'Add goal' })
-  vim.keymap.set('n', leader .. 'i', '<cmd>DailyChampNote<cr>', { desc = 'Add note' })
+  vim.keymap.set('n', leader .. 's', '<cmd>DailyChampSection<cr>', vim.tbl_extend('force', opts, { desc = 'New section' }))
+  vim.keymap.set('n', leader .. 'g', '<cmd>DailyChampGoal<cr>', vim.tbl_extend('force', opts, { desc = 'Add goal' }))
+  vim.keymap.set('n', leader .. 'i', '<cmd>DailyChampNote<cr>', vim.tbl_extend('force', opts, { desc = 'Add note' }))
   
   -- Info
-  vim.keymap.set('n', leader .. 'S', '<cmd>DailyChampStats<cr>', { desc = 'Show stats' })
+  vim.keymap.set('n', leader .. 'S', '<cmd>DailyChampStats<cr>', vim.tbl_extend('force', opts, { desc = 'Show stats' }))
 end
 
--- Auto-setup keymaps on plugin load
-setup_keymaps()
-
--- Autocmd: Set filetype-specific settings for daily.md
+-- Auto-setup keymaps only for dailychamp markdown files
+-- Autocmd: Set filetype-specific settings and keybindings for daily.md
 vim.api.nvim_create_autocmd({"BufEnter", "BufWinEnter"}, {
   pattern = {"*/daily.md", "*/dailychamp/*.md"},
   callback = function()
+    -- Setup keymaps (buffer-local)
+    setup_keymaps()
+    
     -- Set markdown filetype
     vim.bo.filetype = "markdown"
     

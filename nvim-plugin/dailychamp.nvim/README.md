@@ -29,7 +29,6 @@ return {
     require("dailychamp").setup({
       -- Optional: customize settings
       file_path = vim.fn.expand("~/Nextcloud/Notes/dailychamp/daily.md"),
-      leader = "<leader>d",
       default_hours = "1.0",
     })
   end,
@@ -51,44 +50,44 @@ Then restart Neovim.
 
 ## Default Keybindings
 
-All keybindings use `<leader>d` prefix (customizable):
+All keybindings use `<localleader>` prefix (filetype-specific, customizable):
 
 ### File Operations
 | Key | Command | Description |
 |-----|---------|-------------|
-| `<leader>do` | `:DailyChampOpen` | Open daily.md file |
+| `<localleader>o` | `:DailyChampOpen` | Open daily.md file |
 
 ### Navigation
 | Key | Command | Description |
 |-----|---------|-------------|
-| `<leader>dt` | `:DailyChampJumpToday` | Jump to today's entry |
-| `<leader>dd` | `:DailyChampJumpDate` | Jump to specific date (prompt) |
+| `<localleader>t` | `:DailyChampJumpToday` | Jump to today's entry |
+| `<localleader>j` | `:DailyChampJumpDate` | Jump to specific date (prompt) |
 
 ### Day Operations
 | Key | Command | Description |
 |-----|---------|-------------|
-| `<leader>dn` | `:DailyChampNewDay` | Insert new day at top (newest first) |
-| `<leader>dN` | `:DailyChampNewDayHere` | Insert new day at cursor |
+| `<localleader>n` | `:DailyChampNewDay` | Insert new day at top (newest first) |
+| `<localleader>N` | `:DailyChampNewDayHere` | Insert new day at cursor |
 
 ### Task Operations
 | Key | Command | Description |
 |-----|---------|-------------|
-| `<leader>da` | `:DailyChampQuickTask` | Add task (quick, inline edit) |
-| `<leader>dA` | `:DailyChampTask` | Add task (with prompts) |
-| `<leader>dx` | `:DailyChampToggle` | Toggle task completion ([ ] ↔ [x]) |
-| `<leader>dc` | `:DailyChampCopyTask` | Copy current task to tomorrow |
+| `<localleader>a` | `:DailyChampQuickTask` | Add task (quick, inline edit) |
+| `<localleader>A` | `:DailyChampTask` | Add task (with prompts) |
+| `<localleader>x` | `:DailyChampToggle` | Toggle task completion ([ ] ↔ [x]) |
+| `<localleader>c` | `:DailyChampCopyTask` | Copy current task to tomorrow |
 
 ### Section Operations
 | Key | Command | Description |
 |-----|---------|-------------|
-| `<leader>ds` | `:DailyChampSection` | Insert new section |
-| `<leader>dg` | `:DailyChampGoal` | Add goal (list item) |
-| `<leader>di` | `:DailyChampNote` | Add note (list item) |
+| `<localleader>s` | `:DailyChampSection` | Insert new section |
+| `<localleader>g` | `:DailyChampGoal` | Add goal (list item) |
+| `<localleader>i` | `:DailyChampNote` | Add note (list item) |
 
 ### Info
 | Key | Command | Description |
 |-----|---------|-------------|
-| `<leader>dS` | `:DailyChampStats` | Show day statistics (X/Y completed) |
+| `<localleader>S` | `:DailyChampStats` | Show day statistics (X/Y completed) |
 
 ## Configuration
 
@@ -113,24 +112,26 @@ require("dailychamp").setup({
   
   -- File path (supports ~ expansion)
   file_path = vim.fn.expand("~/Nextcloud/Notes/dailychamp/daily.md"),
-  
-  -- Keybinding prefix
-  leader = "<leader>d",
 })
 ```
 
+**Note:** Keybindings use `<localleader>` by default, which is filetype-specific and won't conflict with global mappings.
+
 ### Custom Keybindings
 
-To use different keybindings, set them after setup:
+By default, keybindings use `<localleader>` which only works in dailychamp markdown files. To customize:
 
 ```lua
--- Use <leader>x instead of <leader>d
-require("dailychamp").setup({ leader = "<leader>x" })
+-- Change localleader globally (if not already set)
+vim.g.maplocalleader = ","
 
--- Or set individual mappings
+-- Or use a different prefix entirely
+require("dailychamp").setup({ leader = "<leader>d" })
+
+-- Or set individual mappings after setup
 local dailychamp = require("dailychamp")
-vim.keymap.set('n', '<leader>tt', dailychamp.jump_to_today, { desc = 'Jump to today' })
-vim.keymap.set('n', '<leader>tn', dailychamp.insert_new_day, { desc = 'New day' })
+vim.keymap.set('n', '<leader>tt', dailychamp.jump_to_today, { desc = 'Jump to today', buffer = true })
+vim.keymap.set('n', '<leader>tn', dailychamp.insert_new_day, { desc = 'New day', buffer = true })
 ```
 
 ### Custom Sections
@@ -224,18 +225,18 @@ All commands available via `:DailyChamp<Tab>`:
 
 ### Daily Workflow
 
-1. **Start your day**: `<leader>do` to open daily.md
-2. **Jump to today**: `<leader>dt`
-3. **Add tasks quickly**: `<leader>da` (opens inline)
-4. **Mark complete**: `<leader>dx` on task line
-5. **Check progress**: `<leader>dS`
+1. **Start your day**: `<localleader>o` to open daily.md
+2. **Jump to today**: `<localleader>t`
+3. **Add tasks quickly**: `<localleader>a` (opens inline)
+4. **Mark complete**: `<localleader>x` on task line
+5. **Check progress**: `<localleader>S`
 
 ### Creating New Day
 
 The plugin creates days in **reverse chronological order** (newest first):
 
 ```bash
-<leader>dn  # Inserts new day at top of file
+<localleader>n  # Inserts new day at top of file
 ```
 
 Template automatically includes:
@@ -248,7 +249,7 @@ Template automatically includes:
 Didn't finish a task today? Copy it to tomorrow:
 
 1. Move cursor to task line
-2. Press `<leader>dc`
+2. Press `<localleader>c`
 3. Task copied to tomorrow's Tasks section (as incomplete)
 
 ### Custom Sections
@@ -256,7 +257,7 @@ Didn't finish a task today? Copy it to tomorrow:
 Not limited to Goals/Tasks/Notes/Reflections! Create any section:
 
 ```bash
-<leader>ds  # Prompts for section name
+<localleader>s  # Prompts for section name
 ```
 
 ## Syntax Highlighting
@@ -287,14 +288,19 @@ ls -la ~/.local/share/nvim/site/pack/plugins/start/
 
 ### Keybindings not working
 
-Check your leader key:
+Check your localleader key:
 ```vim
-:echo mapleader
+:echo maplocalleader
 ```
 
-Change the prefix if there's a conflict:
+Set it if undefined (typically in your init.lua):
 ```lua
-require("dailychamp").setup({ leader = "<leader>x" })
+vim.g.maplocalleader = ","  -- or any other key
+```
+
+Or change the plugin prefix:
+```lua
+require("dailychamp").setup({ leader = "<leader>d" })
 ```
 
 ### Commands not found
@@ -329,12 +335,12 @@ require("dailychamp").setup({
   },
 })
 
--- Extra custom mappings
+-- Extra custom mappings (buffer-local)
 local dailychamp = require("dailychamp")
 vim.keymap.set('n', '<leader>tx', function()
   dailychamp.toggle_task()
   dailychamp.copy_task_to_tomorrow()
-end, { desc = 'Complete & copy to tomorrow' })
+end, { desc = 'Complete & copy to tomorrow', buffer = true })
 ```
 
 ### Work/Personal Split
@@ -382,14 +388,16 @@ The plugin is designed to be easily customizable. Feel free to:
 
 ## Roadmap
 
-Future enhancements:
+Future enhancements being considered:
 
-- [ ] Telescope integration for fuzzy date search
-- [ ] Task templates (recurring tasks)
-- [ ] Time tracking summaries
-- [ ] Week view generation
-- [ ] Export to other formats
-- [ ] Integration with calendar apps
+- Telescope integration for fuzzy date search
+- Task templates (recurring tasks)
+- Time tracking summaries
+- Week view generation
+- Export to other formats
+- Integration with calendar apps
+
+Contributions and ideas welcome!
 
 ## Author
 

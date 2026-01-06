@@ -24,8 +24,8 @@ M.config = {
   -- File paths (customize to your setup)
   file_path = vim.fn.expand("~/Nextcloud/Notes/dailychamp/daily.md"),
   
-  -- Keybindings prefix (customize to avoid conflicts)
-  leader = "<leader>d", -- d for DailyChamp
+  -- Keybindings prefix (uses localleader for filetype-specific bindings)
+  leader = "<localleader>",
 }
 
 -- Setup function to override defaults
