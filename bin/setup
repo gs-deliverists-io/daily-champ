@@ -1,0 +1,131 @@
+#!/usr/bin/env bash
+set -eo pipefail
+
+# Prefer app executables
+app_root="$(
+  cd "$(dirname "$0")/.."
+  pwd
+)"
+export PATH="$app_root/bin:$PATH"
+
+# Install gum if needed
+if ! command -v gum &>/dev/null; then
+  echo
+  echo "▸ Installing gum"
+  if command -v pacman &>/dev/null; then
+    sudo pacman -S --noconfirm gum
+  elif command -v brew &>/dev/null; then
+    brew install gum
+  else
+    echo "Please install gum: https://github.com/charmbracelet/gum"
+    exit 1
+  fi
+  echo
+fi
+
+# Install mise if needed
+if ! command -v mise &>/dev/null; then
+  echo
+  echo "▸ Installing mise"
+  if command -v pacman &>/dev/null; then
+    sudo pacman -S --noconfirm mise
+  elif command -v brew &>/dev/null; then
+    brew install mise
+  else
+    echo "Please install mise: https://mise.jdx.dev/installing-mise.html#installation-methods"
+    exit 1
+  fi
+  echo
+fi
+
+step() {
+  local step_name="$1"
+  shift
+
+  gum style --foreground 135 --bold "▸ $step_name"
+  gum style --foreground 240 "$*"
+
+  "$@"
+
+  local exit_code=$?
+  echo
+  return $exit_code
+}
+
+echo
+gum style --foreground 153 "   ˚ ∘             ∘ ˚   "
+gum style --foreground 111 --bold "  ∘˚˳°∘°  execute  °∘°˳˚∘  "
+echo
+
+step "Installing Flutter" mise install --yes
+eval "$(mise hook-env -s bash)"
+
+# Install CocoaPods if on macOS
+if [[ "$OSTYPE" == "darwin"* ]]; then
+  if ! command -v pod &>/dev/null; then
+    if command -v brew &>/dev/null; then
+      step "Installing CocoaPods" brew install cocoapods
+    else
+      gum style --foreground 208 "⚠ Warning: CocoaPods not found. Install with: brew install cocoapods"
+    fi
+  fi
+fi
+
+step "Installing Flutter dependencies" mise exec -- flutter pub get
+
+# Create Nextcloud Notes directory if it doesn't exist
+notes_dir="/Users/gs/Nextcloud/Notes"
+if [ ! -d "$notes_dir" ]; then
+  step "Creating Notes directory" mkdir -p "$notes_dir"
+fi
+
+# Create execute.md if it doesn't exist
+execute_file="$notes_dir/execute.md"
+if [ ! -f "$execute_file" ]; then
+  step "Creating execute.md" bash -c "cat > '$execute_file' << 'EOF'
+# $(date +%Y-%m-%d) $(date +%A)
+
+## Goals
+- Get started with Execute
+
+## Tasks
+- [ ] Complete first task | 1.0h
+
+## Notes
+- Daily task execution tracker
+
+## Reflections
+
+
+---
+EOF"
+  gum style --foreground 46 "✓ Created $execute_file"
+fi
+
+# Run tests if requested
+if [[ $* == *--test* ]]; then
+  step "Running tests" mise exec -- flutter test
+fi
+
+# Build app if requested
+if [[ $* == *--build* ]]; then
+  if [[ "$OSTYPE" == "darwin"* ]]; then
+    step "Building macOS app" mise exec -- flutter build macos
+  else
+    step "Building web app" mise exec -- flutter build web
+  fi
+fi
+
+echo
+gum style --foreground 46 "✓ Setup complete (${SECONDS} sec)"
+echo
+gum style --foreground 240 "Run the app:"
+if [[ "$OSTYPE" == "darwin"* ]]; then
+  gum style --foreground 111 "  mise exec -- flutter run -d macos"
+else
+  gum style --foreground 111 "  mise exec -- flutter run -d chrome"
+fi
+echo
+gum style --foreground 240 "Data location:"
+gum style --foreground 111 "  $execute_file"
+echo

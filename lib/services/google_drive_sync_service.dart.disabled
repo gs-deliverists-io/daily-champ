@@ -1,0 +1,217 @@
+import 'dart:convert';
+import 'package:googleapis/drive/v3.dart' as drive;
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:extension_google_sign_in_as_googleapis_auth/extension_google_sign_in_as_googleapis_auth.dart';
+
+/// Service for syncing with Google Drive
+class GoogleDriveSyncService {
+  final String fileName;
+  GoogleSignIn? _googleSignIn;
+  drive.DriveApi? _driveApi;
+  String? _fileId;
+
+  GoogleDriveSyncService({
+    this.fileName = 'execute.md',
+  });
+
+  /// Initialize Google Drive (sign in if needed)
+  Future<bool> initialize() async {
+    try {
+      // Create GoogleSignIn instance only when needed (lazy initialization)
+      // This prevents crash if GIDClientID is not configured in Info.plist
+      _googleSignIn ??= GoogleSignIn(
+        scopes: [drive.DriveApi.driveFileScope],
+      );
+
+      // Try silent sign in first
+      GoogleSignInAccount? account = await _googleSignIn!.signInSilently();
+
+      // If silent sign in fails, do interactive sign in
+      account ??= await _googleSignIn!.signIn();
+
+      if (account == null) {
+        return false; // User cancelled sign in
+      }
+
+      // Get authenticated HTTP client
+      final authClient = await _googleSignIn!.authenticatedClient();
+      if (authClient == null) {
+        return false;
+      }
+
+      // Initialize Drive API
+      _driveApi = drive.DriveApi(authClient);
+
+      // Find or create the execute.md file
+      await _findOrCreateFile();
+
+      return true;
+    } catch (e) {
+      print('Google Drive initialization error: $e');
+      // Check if it's a configuration error
+      if (e.toString().contains('GIDClientID') ||
+          e.toString().contains('No active configuration')) {
+        throw Exception(
+            'Google Drive not configured. Please add GIDClientID to Info.plist. '
+            'See: https://developers.google.com/identity/sign-in/ios/start-integrating');
+      }
+      return false;
+    }
+  }
+
+  /// Check if user is signed in
+  Future<bool> isSignedIn() async {
+    if (_googleSignIn == null) return false;
+    return await _googleSignIn!.isSignedIn();
+  }
+
+  /// Sign out from Google Drive
+  Future<void> signOut() async {
+    await _googleSignIn?.signOut();
+    _driveApi = null;
+    _fileId = null;
+  }
+
+  /// Find existing file or create new one
+  Future<void> _findOrCreateFile() async {
+    if (_driveApi == null) return;
+
+    try {
+      // Search for the file
+      final fileList = await _driveApi!.files.list(
+        q: "name='$fileName' and trashed=false",
+        spaces: 'drive',
+        $fields: 'files(id, name, modifiedTime)',
+      );
+
+      if (fileList.files != null && fileList.files!.isNotEmpty) {
+        // File exists, use it
+        _fileId = fileList.files!.first.id;
+      } else {
+        // Create new file
+        final file = drive.File()
+          ..name = fileName
+          ..mimeType = 'text/markdown';
+
+        final createdFile = await _driveApi!.files.create(
+          file,
+          uploadMedia: drive.Media(
+            Stream.value(utf8.encode('')),
+            0,
+          ),
+        );
+
+        _fileId = createdFile.id;
+      }
+    } catch (e) {
+      throw GoogleDriveSyncException('Failed to find or create file: $e');
+    }
+  }
+
+  /// Download file from Google Drive
+  Future<String?> download() async {
+    if (_driveApi == null || _fileId == null) {
+      await initialize();
+    }
+
+    if (_driveApi == null || _fileId == null) {
+      throw GoogleDriveSyncException('Not initialized');
+    }
+
+    try {
+      final drive.Media? media = await _driveApi!.files.get(
+        _fileId!,
+        downloadOptions: drive.DownloadOptions.fullMedia,
+      ) as drive.Media?;
+
+      if (media == null) return null;
+
+      final List<int> dataStore = [];
+      await for (var data in media.stream) {
+        dataStore.addAll(data);
+      }
+
+      return utf8.decode(dataStore);
+    } catch (e) {
+      throw GoogleDriveSyncException('Failed to download: $e');
+    }
+  }
+
+  /// Upload file to Google Drive
+  Future<void> upload(String content) async {
+    if (_driveApi == null || _fileId == null) {
+      await initialize();
+    }
+
+    if (_driveApi == null || _fileId == null) {
+      throw GoogleDriveSyncException('Not initialized');
+    }
+
+    try {
+      final bytes = utf8.encode(content);
+      final media = drive.Media(
+        Stream.value(bytes),
+        bytes.length,
+        contentType: 'text/markdown',
+      );
+
+      await _driveApi!.files.update(
+        drive.File(),
+        _fileId!,
+        uploadMedia: media,
+      );
+    } catch (e) {
+      throw GoogleDriveSyncException('Failed to upload: $e');
+    }
+  }
+
+  /// Check if file exists on Google Drive
+  Future<bool> exists() async {
+    if (_driveApi == null) {
+      await initialize();
+    }
+
+    return _fileId != null;
+  }
+
+  /// Get file metadata (last modified time)
+  Future<DateTime?> getLastModified() async {
+    if (_driveApi == null || _fileId == null) {
+      await initialize();
+    }
+
+    if (_driveApi == null || _fileId == null) {
+      return null;
+    }
+
+    try {
+      final file = await _driveApi!.files.get(
+        _fileId!,
+        $fields: 'modifiedTime',
+      ) as drive.File;
+
+      return file.modifiedTime;
+    } catch (e) {
+      print('Failed to get last modified time: $e');
+      return null;
+    }
+  }
+
+  /// Get current user's email
+  Future<String?> getUserEmail() async {
+    if (_googleSignIn == null) return null;
+    final account =
+        _googleSignIn!.currentUser ?? await _googleSignIn!.signInSilently();
+    return account?.email;
+  }
+}
+
+/// Exception for Google Drive sync errors
+class GoogleDriveSyncException implements Exception {
+  final String message;
+
+  GoogleDriveSyncException(this.message);
+
+  @override
+  String toString() => 'GoogleDriveSyncException: $message';
+}

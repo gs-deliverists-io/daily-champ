@@ -1,0 +1,55 @@
+name: dailychamp_app
+description: DailyChamp - Daily task execution tracker with markdown storage
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  
+  # State Management
+  provider: ^6.1.1
+  
+  # Utilities
+  uuid: ^4.2.1
+  
+  # File System & Storage
+  path_provider: ^2.1.1
+  path: ^1.8.3
+  watcher: ^1.1.0
+  
+  # Cloud Storage
+  shared_preferences: ^2.2.2
+  # Google Drive - DISABLED until OAuth is configured in Info.plist
+  # googleapis: ^13.2.0
+  # google_sign_in: ^6.2.1
+  # extension_google_sign_in_as_googleapis_auth: ^2.0.12
+  
+  # UI Components
+  table_calendar: ^3.2.0
+  intl: ^0.20.2
+  fl_chart: ^1.1.1
+  google_fonts: ^6.2.1
+  flutter_markdown_plus: ^1.0.7
+  url_launcher: ^6.3.1
+  flutter_slidable: ^4.0.3
+  
+  # Icons
+  cupertino_icons: ^1.0.6
+  path_provider_foundation: ^2.5.1
+  http: ^1.6.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
+  
+  # Assets
+  # assets:
+  #   - assets/images/

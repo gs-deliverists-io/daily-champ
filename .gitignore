@@ -1,0 +1,99 @@
+# Miscellaneous
+*.class
+*.log
+*.pyc
+*.swp
+.DS_Store
+.atom/
+.build/
+.buildlog/
+.history
+.svn/
+.swiftpm/
+migrate_working_dir/
+
+# IntelliJ related
+*.iml
+*.ipr
+*.iws
+.idea/
+
+# Visual Studio Code
+.vscode/
+*.code-workspace
+
+# Flutter/Dart/Pub related
+**/doc/api/
+**/ios/Flutter/.last_build_id
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+.pub/
+/build/
+/coverage/
+
+# Symbolication related
+app.*.symbols
+
+# Obfuscation related
+app.*.map.json
+
+# Android Studio will place build artifacts here
+/android/app/debug
+/android/app/profile
+/android/app/release
+
+# iOS/macOS specific
+**/ios/Pods/
+**/ios/.symlinks/
+**/ios/Flutter/Flutter.framework
+**/ios/Flutter/Flutter.podspec
+**/ios/Flutter/Generated.xcconfig
+**/ios/Flutter/app.flx
+**/ios/Flutter/app.zip
+**/ios/Flutter/flutter_assets/
+**/ios/ServiceDefinitions.json
+**/macos/Flutter/GeneratedPluginRegistrant.swift
+**/macos/Pods/
+
+# Web specific
+**/web/flutter_service_worker.js
+**/web/version.json
+
+# User-specific files
+*.bak
+*.tmp
+*~
+
+# Sensitive credentials (DO NOT COMMIT)
+**/credentials.json
+**/secrets.dart
+**/.env
+
+# User data and logs
+**/dailychamp/daily.md
+**/dailychamp/templates/*.md
+**/dailychamp/backups/
+**/dailychamp/logs/
+
+# Test coverage
+lcov.info
+/test/.test_coverage.dart
+
+# Generated files
+*.g.dart
+*.freezed.dart
+*.gr.dart
+
+# Firebase
+**/firebase_options.dart
+**/google-services.json
+**/GoogleService-Info.plist
+
+# Platform-specific
+.fvm/
+.flutter-devtools/
+.metadata
+

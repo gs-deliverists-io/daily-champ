@@ -1,0 +1,7 @@
+{
+  // Disable MD024 (no-duplicate-heading) - Allow duplicate headings in different sections
+  "MD024": false,
+  
+  // Disable MD025 (single-title/single-h1) - Allow multiple H1 headings
+  "MD025": false
+}
