@@ -7,6 +7,8 @@ A beautiful, minimalist daily task tracker with markdown-based storage and Nextc
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![Tests](https://img.shields.io/badge/tests-36%2F36-brightgreen)
 
+**Neovim Plugin:** [dailychamp.nvim](https://github.com/gs-deliverists-io/dailychamp.nvim) - Edit your daily tasks in Neovim!
+
 ## Features
 
 ### 📅 Daily Planning
