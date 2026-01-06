@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../theme/theme_compat.dart';
 
 /// Type of item to add
-enum ItemType { task, note, text }
+enum ItemType { task, text }
 
 /// Time unit for task duration
 enum TimeUnit { minutes, hours }
@@ -26,7 +26,7 @@ class _AddItemSheetState extends State<AddItemSheet> {
   final _formKey = GlobalKey<FormState>();
   late TextEditingController _contentController;
   late TextEditingController _timeController;
-  ItemType _selectedType = ItemType.note;
+  ItemType _selectedType = ItemType.task;
   TimeUnit _selectedTimeUnit = TimeUnit.hours;
 
   @override
@@ -237,13 +237,6 @@ class _AddItemSheetState extends State<AddItemSheet> {
           _buildTypeOption(
             theme: theme,
             colorScheme: colorScheme,
-            type: ItemType.note,
-            icon: Icons.notes_outlined,
-            label: 'Note',
-          ),
-          _buildTypeOption(
-            theme: theme,
-            colorScheme: colorScheme,
             type: ItemType.text,
             icon: Icons.text_fields_outlined,
             label: 'Text',
@@ -314,8 +307,6 @@ class _AddItemSheetState extends State<AddItemSheet> {
     switch (_selectedType) {
       case ItemType.task:
         return 'Task';
-      case ItemType.note:
-        return 'Note';
       case ItemType.text:
         return 'Text';
     }
@@ -325,8 +316,6 @@ class _AddItemSheetState extends State<AddItemSheet> {
     switch (_selectedType) {
       case ItemType.task:
         return 'What needs to be done?';
-      case ItemType.note:
-        return 'Add a note...';
       case ItemType.text:
         return 'Enter your text...';
     }
@@ -336,8 +325,6 @@ class _AddItemSheetState extends State<AddItemSheet> {
     switch (_selectedType) {
       case ItemType.task:
         return 'Add Task';
-      case ItemType.note:
-        return 'Add Note';
       case ItemType.text:
         return 'Add Text';
     }
