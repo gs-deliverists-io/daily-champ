@@ -12,7 +12,7 @@ class Task {
   Task({
     String? id,
     required this.title,
-    this.estimatedHours = 1.0,
+    this.estimatedHours = 0.0,
     this.isCompleted = false,
     this.completedAt,
     DateTime? createdAt,

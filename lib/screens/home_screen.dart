@@ -14,32 +14,30 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
 
-  late final List<Widget> _screens;
-
-  @override
-  void initState() {
-    super.initState();
-    _screens = [
-      TodayScreen(onNavigateToSettings: () {
-        setState(() {
-          _currentIndex = 3; // Settings tab index
-        });
-      }),
-      const CalendarScreen(),
-      const StatsScreen(),
-      const SettingsScreen(),
-    ];
-  }
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
+    // Build screens list here to allow Today screen to be recreated
+    final screens = [
+      TodayScreen(
+        key: ValueKey('today_${DateTime.now().millisecondsSinceEpoch ~/ 1000}'),
+        onNavigateToSettings: () {
+          setState(() {
+            _currentIndex = 3; // Settings tab index
+          });
+        },
+      ),
+      const CalendarScreen(),
+      const StatsScreen(),
+      const SettingsScreen(),
+    ];
+
     return Scaffold(
       body: IndexedStack(
         index: _currentIndex,
-        children: _screens,
+        children: screens,
       ),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
@@ -50,9 +48,17 @@ class _HomeScreenState extends State<HomeScreen> {
         child: BottomNavigationBar(
           currentIndex: _currentIndex,
           onTap: (index) {
-            setState(() {
-              _currentIndex = index;
-            });
+            // If tapping the Today tab while already on it, trigger a rebuild
+            // to reset the TodayScreen to show today's date
+            if (index == 0 && _currentIndex == 0) {
+              setState(() {
+                // Rebuild to recreate TodayScreen with today's date
+              });
+            } else {
+              setState(() {
+                _currentIndex = index;
+              });
+            }
           },
           backgroundColor: colorScheme.surface,
           selectedItemColor: colorScheme.primary,

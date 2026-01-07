@@ -180,8 +180,14 @@ class MarkdownWriter {
   /// Format a task as markdown: - [ ] Task title | 2.0h
   static String _formatTask(Task task) {
     final checkbox = task.isCompleted ? '[x]' : '[ ]';
-    final hours = _formatHours(task.estimatedHours);
-    return '- $checkbox ${task.title} | $hours';
+
+    // Only add duration if it's greater than 0
+    if (task.estimatedHours > 0) {
+      final hours = _formatHours(task.estimatedHours);
+      return '- $checkbox ${task.title} | $hours';
+    } else {
+      return '- $checkbox ${task.title}';
+    }
   }
 
   /// Format hours as string

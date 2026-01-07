@@ -310,7 +310,7 @@ class DailyChampProvider with ChangeNotifier {
     String sectionName,
     String item, {
     bool isTask = false,
-    double estimatedHours = 1.0,
+    double estimatedHours = 0.0,
   }) async {
     var entry = getEntryForDate(date);
 
@@ -330,8 +330,9 @@ class DailyChampProvider with ChangeNotifier {
       );
 
       // Format as checkbox line for section storage
-      final checkboxLine =
-          '- [ ] $item | ${estimatedHours.toStringAsFixed(1)}h';
+      final checkboxLine = estimatedHours > 0
+          ? '- [ ] $item | ${estimatedHours.toStringAsFixed(1)}h'
+          : '- [ ] $item';
       entry.addItemToSection(sectionName, checkboxLine, task: task);
     } else {
       // Regular item (note) - stored without the "- " prefix
@@ -629,43 +630,76 @@ class DailyChampProvider with ChangeNotifier {
           '${today.year}-${today.month.toString().padLeft(2, '0')}-${today.day.toString().padLeft(2, '0')}';
 
       final lastOpenDate = prefs.getString('last_open_date');
+      debugPrint('🔍 Template Auto-Apply Check:');
+      debugPrint('  Today: $todayKey');
+      debugPrint('  Last open date: $lastOpenDate');
 
       // Check if this is a new day
       if (lastOpenDate == todayKey) {
+        debugPrint('  ❌ Same day as last open, skipping auto-apply');
         return false; // Same day, no need to auto-apply
       }
 
       // Update last open date
       await prefs.setString('last_open_date', todayKey);
+      debugPrint('  ✅ New day detected, updated last_open_date');
 
       // Check if today's entry is empty
       final todayEntry = getEntryForDate(today);
       final isEmpty = todayEntry == null ||
           (todayEntry.sections.isEmpty && todayEntry.tasks.isEmpty);
 
+      debugPrint('  Today entry exists: ${todayEntry != null}');
+      if (todayEntry != null) {
+        debugPrint(
+            '  Sections: ${todayEntry.sections.length}, Tasks: ${todayEntry.tasks.length}');
+      }
+      debugPrint('  Is empty: $isEmpty');
+
       if (!isEmpty) {
+        debugPrint('  ❌ Today already has content, skipping auto-apply');
         return false; // Today already has content
       }
 
       // Check for default template
       final defaultTemplateId = prefs.getString('default_template_id');
+      debugPrint('  Default template ID: $defaultTemplateId');
+
       if (defaultTemplateId == null ||
           defaultTemplateId.isEmpty ||
           defaultTemplateId == 'blank') {
+        debugPrint('  ❌ No default template configured (is blank or null)');
         return false; // No default template configured
       }
 
       // Apply the default template
-      await createEntryFromTemplate(today, defaultTemplateId);
+      debugPrint('  ✅ Applying default template "$defaultTemplateId"...');
 
-      // Store template association for today
-      await prefs.setString('template_$todayKey', defaultTemplateId);
+      try {
+        await createEntryFromTemplate(today, defaultTemplateId);
 
-      debugPrint(
-          'Auto-applied default template "$defaultTemplateId" for new day');
-      return true;
+        // Verify that the template was actually applied
+        final updatedEntry = getEntryForDate(today);
+        if (updatedEntry != null && updatedEntry.sections.isNotEmpty) {
+          // Store template association for today
+          await prefs.setString('template_$todayKey', defaultTemplateId);
+
+          debugPrint(
+              '  ✅ Successfully auto-applied default template "$defaultTemplateId" for new day');
+          return true;
+        } else {
+          debugPrint(
+              '  ❌ Template "$defaultTemplateId" was not applied. The template may not exist.');
+          debugPrint(
+              '  💡 Tip: Check available templates in the app or create "$defaultTemplateId.md" in ~/Nextcloud/Notes/dailychamp/templates/');
+          return false;
+        }
+      } catch (e) {
+        debugPrint('  ❌ Error applying template: $e');
+        return false;
+      }
     } catch (e) {
-      debugPrint('Failed to check/apply new day template: $e');
+      debugPrint('  ❌ Failed to check/apply new day template: $e');
       return false;
     }
   }
@@ -791,7 +825,11 @@ class DailyChampProvider with ChangeNotifier {
 
     final template = await templateService.loadTemplate(templateId);
     if (template != null) {
+      debugPrint('  ✅ Template "$templateId" loaded successfully');
       await applyTemplate(date, template);
+    } else {
+      debugPrint(
+          '  ❌ Template "$templateId" not found! Available templates: weekday, weekend, blank, and any custom templates in ~/Nextcloud/Notes/dailychamp/templates/');
     }
   }
 
@@ -845,8 +883,9 @@ class DailyChampProvider with ChangeNotifier {
     }
 
     // Add task to target section
-    final checkboxLine =
-        '- [ ] ${copiedTask.title} | ${copiedTask.estimatedHours.toStringAsFixed(1)}h';
+    final checkboxLine = copiedTask.estimatedHours > 0
+        ? '- [ ] ${copiedTask.title} | ${copiedTask.estimatedHours.toStringAsFixed(1)}h'
+        : '- [ ] ${copiedTask.title}';
     targetEntry.addItemToSection(sectionName, checkboxLine, task: copiedTask);
 
     await saveEntry(targetEntry);

@@ -21,7 +21,11 @@ class TodayScreen extends StatefulWidget {
   final DateTime? initialDate;
   final VoidCallback? onNavigateToSettings;
 
-  const TodayScreen({super.key, this.initialDate, this.onNavigateToSettings});
+  const TodayScreen({
+    super.key,
+    this.initialDate,
+    this.onNavigateToSettings,
+  });
 
   @override
   State<TodayScreen> createState() => _TodayScreenState();
@@ -34,6 +38,17 @@ class _TodayScreenState extends State<TodayScreen> {
   void initState() {
     super.initState();
     _selectedDate = widget.initialDate ?? DateTime.now();
+  }
+
+  /// Reset the selected date to today
+  void resetToToday() {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    if (_selectedDate != today) {
+      setState(() {
+        _selectedDate = today;
+      });
+    }
   }
 
   /// Navigate to previous or next day
@@ -230,13 +245,13 @@ class _TodayScreenState extends State<TodayScreen> {
           bool success = true;
 
           if (type == ItemType.task) {
-            // Add as task with estimated hours
+            // Add as task with estimated hours (0.0 if not provided)
             success = await provider.addItemToSection(
               _selectedDate,
               sectionName,
               content,
               isTask: true,
-              estimatedHours: hours ?? 1.0,
+              estimatedHours: hours ?? 0.0,
             );
           } else {
             // Add as note or text (both stored the same way)
@@ -625,25 +640,32 @@ class _TodayScreenState extends State<TodayScreen> {
                               horizontal: AppTheme.space24,
                               vertical: AppTheme.space12,
                             ),
-                            child: TextButton.icon(
+                            child: OutlinedButton.icon(
                               onPressed: _showAddSectionDialog,
                               icon: Icon(
-                                Icons.add,
-                                size: 18,
-                                color: colorScheme.onSurface
-                                    .withValues(alpha: 0.6),
+                                Icons.add_box_outlined,
+                                size: 20,
+                                color: colorScheme.primary,
                               ),
                               label: Text(
                                 'Add section',
                                 style: theme.textTheme.labelLarge?.copyWith(
-                                  color: colorScheme.onSurface
-                                      .withValues(alpha: 0.6),
+                                  color: colorScheme.primary,
+                                  fontWeight: FontWeight.w600,
                                 ),
                               ),
-                              style: TextButton.styleFrom(
+                              style: OutlinedButton.styleFrom(
+                                foregroundColor: colorScheme.primary,
+                                side: BorderSide(
+                                  color: colorScheme.primary
+                                      .withValues(alpha: 0.3),
+                                  width: 2,
+                                ),
+                                backgroundColor:
+                                    colorScheme.primary.withValues(alpha: 0.05),
                                 padding: const EdgeInsets.symmetric(
-                                  vertical: AppTheme.space12,
-                                  horizontal: AppTheme.space16,
+                                  vertical: AppTheme.space16,
+                                  horizontal: AppTheme.space20,
                                 ),
                               ),
                             ),
@@ -1289,23 +1311,29 @@ class _TodayScreenState extends State<TodayScreen> {
                 );
               }),
 
-            // Inline Add button (after all items)
+            // Inline Add button (after all items) - aligned to the right
             const SizedBox(height: AppTheme.space12),
-            OutlinedButton.icon(
-              onPressed: () => _showAddItemSheet(section.name),
-              icon: const Icon(Icons.add, size: 20),
-              label: Text(
-                  section.type == SectionType.tasks ? 'Add task' : 'Add item'),
-              style: OutlinedButton.styleFrom(
-                foregroundColor: colorScheme.primary,
-                side: BorderSide(
-                  color: colorScheme.primary.withValues(alpha: 0.5),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                OutlinedButton.icon(
+                  onPressed: () => _showAddItemSheet(section.name),
+                  icon: const Icon(Icons.add, size: 20),
+                  label: Text(section.type == SectionType.tasks
+                      ? 'Add task'
+                      : 'Add item'),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: colorScheme.primary,
+                    side: BorderSide(
+                      color: colorScheme.primary.withValues(alpha: 0.5),
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                      vertical: AppTheme.space12,
+                      horizontal: AppTheme.space16,
+                    ),
+                  ),
                 ),
-                padding: const EdgeInsets.symmetric(
-                  vertical: AppTheme.space12,
-                  horizontal: AppTheme.space16,
-                ),
-              ),
+              ],
             ),
           ],
         ),
