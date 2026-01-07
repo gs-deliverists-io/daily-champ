@@ -7,11 +7,12 @@ A beautiful, minimalist daily task tracker with markdown-based storage and Nextc
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![Tests](https://img.shields.io/badge/tests-36%2F36-brightgreen)
 
-**Neovim Plugin:** [dailychamp.nvim](https://github.com/gs-deliverists-io/dailychamp.nvim) - Edit your daily tasks in Neovim!
+**Neovim Plugin:** [dailychamp.nvim](https://github.com/gs-deliverists-io/daily-champ.nvim) - Edit your daily tasks in Neovim!
 
 ## Features
 
 ### 📅 Daily Planning
+
 - **Day Templates** - Create reusable daily structures (Weekday, Weekend, Custom)
 - **Smart Sections** - Organize your day with customizable sections (Goals, Tasks, Notes, etc.)
 - **Task Management** - Checkboxes with time estimates and completion tracking
@@ -19,18 +20,21 @@ A beautiful, minimalist daily task tracker with markdown-based storage and Nextc
 - **Calendar View** - Visual overview with win/loss tracking (starts on Monday)
 
 ### ✨ Intelligent Workflows
+
 - **Auto-Apply Templates** - New days automatically get your default template
 - **Swipe Actions** - Edit, delete, or copy items to tomorrow with intuitive gestures
 - **Template Inheritance** - Copy items to tomorrow and carry template associations
 - **Progress Tracking** - Real-time completion percentage on each day
 
 ### 🔄 Sync & Storage
+
 - **Nextcloud Integration** - Sync your data across devices via Nextcloud
 - **Markdown-Based** - All data stored in human-readable `.md` files
 - **Local-First** - Works offline, syncs when connected
 - **Template Sync** - Templates stored in Nextcloud for cross-device consistency
 
 ### 🎨 User Experience
+
 - **Light/Dark Themes** - Beautiful icon-based theme selector (☀️ 🌙 ⚙️)
 - **Gesture-Friendly** - Swipe to edit, delete, or copy
 - **Responsive Design** - Adapts to phone, tablet, and desktop
@@ -72,16 +76,19 @@ cd daily-champ
 ```
 
 The setup script will:
+
 - ✅ Install Flutter via `mise` (version manager)
 - ✅ Install CocoaPods (macOS only, required for iOS/macOS builds)
 - ✅ Install Flutter dependencies (`flutter pub get`)
 - ✅ Verify Flutter installation
 
 **Optional flags:**
+
 - `./bin/setup --test` - Run tests after setup
 - `./bin/setup --build` - Build app for your platform after setup
 
 **Note:** The setup script requires:
+
 - [gum](https://github.com/charmbracelet/gum) - For pretty terminal UI
 - [mise](https://mise.jdx.dev/) - For version management
 Both will be auto-installed if you have Homebrew (macOS) or pacman (Arch Linux).
@@ -91,30 +98,36 @@ Both will be auto-installed if you have Homebrew (macOS) or pacman (Arch Linux).
 If you prefer to install manually or the setup script doesn't work:
 
 1. **Clone the repository**
+
    ```bash
    git clone https://github.com/gs-deliverists-io/daily-champ.git
    cd daily-champ
    ```
 
 2. **Install dependencies**
+
    ```bash
    flutter pub get
    ```
 
 3. **Verify setup**
+
    ```bash
    flutter doctor
    ```
+
    Resolve any issues reported by `flutter doctor`.
 
 ### Running the App
 
 #### macOS
+
 ```bash
 flutter run -d macos
 ```
 
 #### iOS Simulator
+
 ```bash
 flutter run -d ios
 # Or specify simulator:
@@ -122,6 +135,7 @@ flutter run -d "iPhone 15 Pro"
 ```
 
 #### Android Emulator
+
 ```bash
 flutter run -d android
 # Or specify device:
@@ -129,11 +143,13 @@ flutter run -d emulator-5554
 ```
 
 #### Web (Chrome)
+
 ```bash
 flutter run -d chrome
 ```
 
 #### Web (Production Build)
+
 ```bash
 flutter build web
 # Output in build/web/
@@ -177,6 +193,7 @@ flutter format lib/ test/
 4. **Tap "Connect"** to verify and start syncing
 
 #### Nextcloud File Structure
+
 ```
 /dailychamp/
 ├── daily.md              # Your daily entries
@@ -194,9 +211,11 @@ Templates define the structure of your daily entries. They're stored as markdown
 #### Creating a Custom Template
 
 **Method 1: Create Locally (macOS)**
+
 1. Navigate to: `~/Nextcloud/Notes/dailychamp/templates/`
 2. Create a new `.md` file (e.g., `focus.md`)
 3. Add your structure:
+
    ```markdown
    ## Today's Focus
    
@@ -204,9 +223,11 @@ Templates define the structure of your daily entries. They're stored as markdown
    
    ## Personal
    ```
+
 4. The app will pick it up on next launch
 
 **Method 2: Create on Nextcloud**
+
 1. Log into your Nextcloud web interface
 2. Navigate to `/dailychamp/templates/`
 3. Create a new markdown file
@@ -229,12 +250,14 @@ You can write multiple paragraphs.
 ```
 
 #### Setting Default Template
+
 1. Tap the template icon in Today view footer
 2. Select a template
 3. Tap **"Set as Default"**
 4. This template will auto-apply when you open the app on a new day
 
 #### Template Behavior
+
 - **Navigation (← →)**: Does NOT auto-apply templates - just shows the day as-is
 - **New day detected**: Auto-applies default template if today is empty
 - **Copy to tomorrow**: Carries template association with the copied item
@@ -290,22 +313,26 @@ User Action → Provider → Service → Storage
 ### Key Components
 
 #### 1. **Provider Pattern (State Management)**
+
 - `DailyChampProvider` manages all app state
 - Uses `ChangeNotifier` to notify UI of changes
 - Handles template application, task management, sync
 
 #### 2. **Markdown Storage**
+
 - All data stored in `daily.md` as human-readable markdown
 - Parser converts markdown ↔ Dart objects
 - Easy to edit manually, easy to backup
 
 #### 3. **Template System**
+
 - Templates define daily structure
 - Stored in `templates/` directory
 - Can be created locally or synced from Nextcloud
 - Default template auto-applies to new days
 
 #### 4. **Nextcloud Sync**
+
 - Bidirectional sync with Nextcloud WebDAV
 - 5-minute cache to minimize API calls
 - Conflict resolution (newest wins)
@@ -362,6 +389,7 @@ Main Flutter configuration file with dependencies and assets.
 Guidelines for AI-assisted development and code style.
 
 ### Platform-Specific Configs
+
 - `ios/Runner.xcodeproj` - iOS project
 - `android/app/build.gradle` - Android config
 - `macos/Runner.xcodeproj` - macOS project
@@ -382,6 +410,7 @@ Contributions are welcome! Please follow these guidelines:
 9. **Open a Pull Request**
 
 ### Code Style
+
 - Use relative imports for internal files
 - Use absolute imports for packages
 - Prefer `const` constructors
@@ -405,6 +434,7 @@ open coverage/html/index.html
 Current test coverage: **36 tests passing**
 
 Test categories:
+
 - **Unit Tests**: Markdown parser, writer, models
 - **Widget Tests**: UI components
 
@@ -413,6 +443,7 @@ Test categories:
 ### Common Issues
 
 **Issue: Build fails with "pod install" error (iOS/macOS)**
+
 ```bash
 cd ios
 pod deintegrate
@@ -423,18 +454,21 @@ flutter pub get
 ```
 
 **Issue: Nextcloud sync not working**
+
 - Verify server URL (include `https://`)
 - Check username/password (try app-specific password)
 - Ensure `/dailychamp/` folder exists on Nextcloud
 - Check network connectivity
 
 **Issue: Templates not showing up**
+
 - Wait 5 minutes for cache refresh
 - Restart the app
 - Check template file format (must be `.md`)
 - Verify templates folder path
 
 **Issue: App crashes on startup**
+
 ```bash
 flutter clean
 flutter pub get
@@ -444,6 +478,7 @@ flutter run --verbose
 ### Debug Mode
 
 Check logs:
+
 ```bash
 # iOS
 flutter logs
@@ -458,17 +493,19 @@ flutter run -d macos --verbose
 ## Features in Detail
 
 ### Today View
+
 - **Navigation**: ← Yesterday | Today | Tomorrow →
 - **Progress**: Shows completion percentage
 - **Sections**: Customizable sections (Goals, Tasks, Notes, etc.)
-- **Swipe Gestures**: 
+- **Swipe Gestures**:
   - Swipe left → Edit & Delete
   - Swipe right → Copy to Tomorrow
-- **Template Button**: 
+- **Template Button**:
   - Empty day → "Apply Template" button (inline)
   - Day with content → Small icon in footer showing template name
 
 ### Calendar View
+
 - **Starts on Monday** (ISO 8601)
 - **Color-coded days**:
   - Win days → Green background
@@ -477,11 +514,13 @@ flutter run -d macos --verbose
 - **Legend**: Shows [W] Win, [L] Loss, [○] Today
 
 ### Stats View
+
 - **Completion percentage** - Shows correct calculation (e.g., 100% for 1/1 tasks)
 - Daily progress tracking
 - Win/loss statistics
 
 ### Settings
+
 - **Theme Selector**: Icon-based (☀️ Sun | 🌙 Moon | ⚙️ System) - full width
 - **Connections**: Nextcloud configuration (credentials + sync)
 - **Future**: Google Drive support (coming soon)
@@ -491,6 +530,7 @@ flutter run -d macos --verbose
 Future enhancements being considered:
 
 ### Sync & Integration
+
 - Google Drive sync support (alternative to Nextcloud)
 - Dropbox sync support
 - WebDAV generic support (any WebDAV server)
@@ -498,6 +538,7 @@ Future enhancements being considered:
 - End-to-end encryption option
 
 ### Task Management
+
 - Recurring tasks (daily, weekly, monthly patterns)
 - Task priorities (high, medium, low)
 - Task tags and categories
@@ -506,6 +547,7 @@ Future enhancements being considered:
 - Time tracking and pomodoro timer
 
 ### Features
+
 - Search functionality (full-text search across all days)
 - Export to PDF/CSV/JSON
 - Import from other task managers
@@ -515,6 +557,7 @@ Future enhancements being considered:
 - Quick capture widget
 
 ### Platforms & UI
+
 - iOS/Android home screen widgets
 - Apple Watch companion app
 - Wear OS support
@@ -523,6 +566,7 @@ Future enhancements being considered:
 - Customizable themes and colors
 
 ### Analytics & Insights
+
 - Advanced statistics and charts
 - Streak tracking and gamification
 - Weekly/monthly reports
@@ -531,12 +575,14 @@ Future enhancements being considered:
 - Time spent analysis
 
 ### Collaboration
+
 - Shared team templates
 - Comments and notes on tasks
 - Activity log and history
 - Conflict resolution for synced edits
 
 ### Developer Features
+
 - API for third-party integrations
 - Webhooks for automation
 - CLI tool for power users
